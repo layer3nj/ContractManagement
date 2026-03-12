@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Link Services to Autotask Clients</h2>
+<form method="post" class="form-grid">
+  <select name="service_id" required>
+    <option value="">Service</option>
+    {% for service in services %}
+    <option value="{{ service.id }}">{{ service.vendor_name }} - {{ service.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="client_id" required>
+    <option value="">Client</option>
+    {% for client in clients %}
+    <option value="{{ client.id }}">{{ client.name }}</option>
+    {% endfor %}
+  </select>
+  <input name="allocation_percent" type="number" min="0" max="100" value="100" step="0.01" />
+  <button type="submit">Create Mapping</button>
+</form>
+<table>
+  <tr><th>Client</th><th>Service</th><th>Vendor</th><th>Allocation %</th></tr>
+  {% for map in mappings %}
+  <tr>
+    <td>{{ map.client_name }}</td>
+    <td>{{ map.service_name }}</td>
+    <td>{{ map.vendor_name }}</td>
+    <td>{{ map.allocation_percent }}%</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4">No mappings yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

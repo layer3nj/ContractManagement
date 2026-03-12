@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Autotask Clients</h2>
+<form method="post" class="form-grid">
+  <input name="name" placeholder="Client name" required />
+  <input name="account_code" placeholder="Account code" />
+  <button type="submit">Add Client</button>
+</form>
+<table>
+  <tr><th>Name</th><th>Account Code</th></tr>
+  {% for client in clients %}
+  <tr><td>{{ client.name }}</td><td>{{ client.account_code }}</td></tr>
+  {% else %}
+  <tr><td colspan="2">No clients yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Expense Dashboard</h2>
+<section class="cards">
+  <article><h3>{{ totals.vendors }}</h3><p>Vendors</p></article>
+  <article><h3>{{ totals.services }}</h3><p>Services</p></article>
+  <article><h3>{{ totals.invoices }}</h3><p>Invoices</p></article>
+  <article><h3>{{ totals.clients }}</h3><p>Autotask Clients</p></article>
+</section>
+
+<section class="grid">
+  <article>
+    <h3>Monthly Spend</h3>
+    <table>
+      <tr><th>Month</th><th>Total</th></tr>
+      {% for row in monthly_spend %}
+      <tr><td>{{ row.month }}</td><td>{{ row.total | money }}</td></tr>
+      {% else %}
+      <tr><td colspan="2">No invoice data yet.</td></tr>
+      {% endfor %}
+    </table>
+  </article>
+
+  <article>
+    <h3>Spend by Vendor</h3>
+    <table>
+      <tr><th>Vendor</th><th>Total</th></tr>
+      {% for row in spend_by_vendor %}
+      <tr><td>{{ row.name }}</td><td>{{ row.total | money }}</td></tr>
+      {% else %}
+      <tr><td colspan="2">No invoice data yet.</td></tr>
+      {% endfor %}
+    </table>
+  </article>
+
+  <article>
+    <h3>Allocated Spend by Client</h3>
+    <table>
+      <tr><th>Client</th><th>Allocated Spend</th></tr>
+      {% for row in spend_by_client %}
+      <tr><td>{{ row.name }}</td><td>{{ row.allocated_spend | money }}</td></tr>
+      {% else %}
+      <tr><td colspan="2">Create mappings + invoices to see allocation.</td></tr>
+      {% endfor %}
+    </table>
+  </article>
+</section>
+{% endblock %}

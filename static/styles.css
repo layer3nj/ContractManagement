@@ -1,0 +1,64 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f6f8fc;
+  color: #1f2937;
+}
+header {
+  background: #0b3d91;
+  color: white;
+  padding: 1rem;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 0.8rem;
+}
+main { padding: 1rem 1.5rem; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+.cards article {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+input, select, button {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #c7ced8;
+}
+button {
+  background: #0b3d91;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-bottom: 1rem;
+}
+th, td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  text-align: left;
+}
+.flash-list { list-style: none; padding: 0; }
+.flash { padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem; }
+.flash.success { background: #d1fae5; }
+.flash.error { background: #fee2e2; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
