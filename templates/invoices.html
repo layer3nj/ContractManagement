@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Invoices</h2>
+<form method="post" class="form-grid">
+  <select name="vendor_id" required>
+    <option value="">Vendor</option>
+    {% for vendor in vendors %}
+    <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="service_id">
+    <option value="">Optional service</option>
+    {% for service in services %}
+    <option value="{{ service.id }}">{{ service.vendor_name }} - {{ service.name }}</option>
+    {% endfor %}
+  </select>
+  <input name="invoice_number" placeholder="Invoice #" />
+  <input name="invoice_date" type="date" required />
+  <input name="amount" type="number" step="0.01" placeholder="Amount" required />
+  <input name="description" placeholder="Description" />
+  <button type="submit">Add Invoice</button>
+</form>
+
+<h3>Import invoices from CSV</h3>
+<p>Expected columns: vendor_name,service_name,invoice_number,invoice_date,amount,description</p>
+<form action="{{ url_for('import_invoices') }}" method="post" enctype="multipart/form-data" class="form-grid">
+  <input name="invoice_csv" type="file" accept=".csv" required />
+  <button type="submit">Import CSV</button>
+</form>
+
+<table>
+  <tr><th>Date</th><th>Vendor</th><th>Service</th><th>Invoice #</th><th>Amount</th><th>Description</th></tr>
+  {% for invoice in invoices %}
+  <tr>
+    <td>{{ invoice.invoice_date }}</td>
+    <td>{{ invoice.vendor_name }}</td>
+    <td>{{ invoice.service_name or '-' }}</td>
+    <td>{{ invoice.invoice_number }}</td>
+    <td>{{ invoice.amount | money }}</td>
+    <td>{{ invoice.description }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6">No invoices yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

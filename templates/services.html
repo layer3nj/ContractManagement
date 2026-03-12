@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Applications & Services</h2>
+<form method="post" class="form-grid">
+  <select name="vendor_id" required>
+    <option value="">Vendor</option>
+    {% for vendor in vendors %}
+    <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+    {% endfor %}
+  </select>
+  <input name="name" placeholder="Service name" required />
+  <input name="category" placeholder="Category" />
+  <input name="recurring_cost" type="number" step="0.01" placeholder="Recurring cost" />
+  <input name="billing_cycle" placeholder="Billing cycle (monthly, annual...)" />
+  <button type="submit">Add Service</button>
+</form>
+<table>
+  <tr><th>Vendor</th><th>Name</th><th>Category</th><th>Recurring Cost</th><th>Billing Cycle</th></tr>
+  {% for service in services %}
+  <tr>
+    <td>{{ service.vendor_name }}</td>
+    <td>{{ service.name }}</td>
+    <td>{{ service.category }}</td>
+    <td>{{ service.recurring_cost | money }}</td>
+    <td>{{ service.billing_cycle }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5">No services yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
