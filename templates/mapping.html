@@ -1,33 +1,70 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Link Services to Autotask Clients</h2>
-<form method="post" class="form-grid">
-  <select name="service_id" required>
-    <option value="">Service</option>
-    {% for service in services %}
-    <option value="{{ service.id }}">{{ service.vendor_name }} - {{ service.name }}</option>
-    {% endfor %}
-  </select>
-  <select name="client_id" required>
-    <option value="">Client</option>
-    {% for client in clients %}
-    <option value="{{ client.id }}">{{ client.name }}</option>
-    {% endfor %}
-  </select>
-  <input name="allocation_percent" type="number" min="0" max="100" value="100" step="0.01" />
-  <button type="submit">Create Mapping</button>
-</form>
+<h2>Service → Client Mapping</h2>
+<p class="muted">
+  Allocate a percentage of each service's invoice costs to one or more clients.
+  These allocations feed into the <a href="{{ url_for('profitability') }}">Profitability</a> report.
+</p>
+
+<section class="card mb-1">
+  <h3>Add Mapping</h3>
+  <form method="post">
+    <div class="form-grid">
+      <div class="field">
+        <label>Service *</label>
+        <select name="service_id" required>
+          <option value="">— select service —</option>
+          {% for s in services %}
+          <option value="{{ s.id }}">{{ s.vendor_name }} — {{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Client *</label>
+        <select name="client_id" required>
+          <option value="">— select client —</option>
+          {% for c in clients %}
+          <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Allocation %</label>
+        <input name="allocation_percent" type="number" min="0" max="100" value="100" step="0.01" />
+      </div>
+    </div>
+    <button type="submit">Create Mapping</button>
+  </form>
+</section>
+
+<h3>Current Mappings ({{ mappings | length }})</h3>
 <table>
-  <tr><th>Client</th><th>Service</th><th>Vendor</th><th>Allocation %</th></tr>
-  {% for map in mappings %}
-  <tr>
-    <td>{{ map.client_name }}</td>
-    <td>{{ map.service_name }}</td>
-    <td>{{ map.vendor_name }}</td>
-    <td>{{ map.allocation_percent }}%</td>
-  </tr>
-  {% else %}
-  <tr><td colspan="4">No mappings yet.</td></tr>
-  {% endfor %}
+  <thead>
+    <tr>
+      <th>Client</th>
+      <th>Service</th>
+      <th>Vendor</th>
+      <th>Allocation %</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in mappings %}
+    <tr>
+      <td>{{ m.client_name }}</td>
+      <td>{{ m.service_name }}</td>
+      <td>{{ m.vendor_name }}</td>
+      <td>{{ m.allocation_percent | pct }}</td>
+      <td>
+        <form method="post" action="{{ url_for('delete_mapping', map_id=m.id) }}"
+              onsubmit="return confirm('Remove this mapping?')">
+          <button type="submit" class="btn-danger btn-sm">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="muted">No mappings yet.</td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

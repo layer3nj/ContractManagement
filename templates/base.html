@@ -3,20 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contract Management</title>
+    <title>{% block title %}Contract & Expense Manager{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
     <header>
-      <h1>Vendor & Spend Management</h1>
-      <nav>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('vendors') }}">Vendors</a>
-        <a href="{{ url_for('services') }}">Services</a>
-        <a href="{{ url_for('invoices') }}">Invoices</a>
-        <a href="{{ url_for('clients') }}">Autotask Clients</a>
-        <a href="{{ url_for('mapping') }}">Service Mapping</a>
-      </nav>
+      <div class="header-inner">
+        <span class="brand">ContractTrack</span>
+        <nav>
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('vendors') }}">Vendors</a>
+          <a href="{{ url_for('contracts') }}">Contracts</a>
+          <a href="{{ url_for('services') }}">Services</a>
+          <a href="{{ url_for('invoices') }}">Invoices</a>
+          <a href="{{ url_for('expenses') }}">Expenses</a>
+          <a href="{{ url_for('clients') }}">Clients</a>
+          <a href="{{ url_for('mapping') }}">Mapping</a>
+          <a href="{{ url_for('profitability') }}" class="nav-highlight">Profitability</a>
+        </nav>
+      </div>
     </header>
 
     <main>
@@ -32,5 +37,9 @@
 
       {% block content %}{% endblock %}
     </main>
+
+    <footer>
+      <p>Contract &amp; Expense Manager</p>
+    </footer>
   </body>
 </html>

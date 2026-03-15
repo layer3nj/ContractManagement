@@ -1,17 +1,74 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Vendors</h2>
-<form method="post" class="form-grid">
-  <input name="name" placeholder="Vendor name" required />
-  <input name="notes" placeholder="Notes" />
-  <button type="submit">Add Vendor</button>
-</form>
+
+<section class="card mb-1">
+  <h3>Add Vendor</h3>
+  <form method="post">
+    <div class="form-grid">
+      <div class="field">
+        <label>Vendor Name *</label>
+        <input name="name" placeholder="e.g. Microsoft" required />
+      </div>
+      <div class="field">
+        <label>Website</label>
+        <input name="website" placeholder="https://..." />
+      </div>
+      <div class="field">
+        <label>Contact Name</label>
+        <input name="contact_name" placeholder="Account rep name" />
+      </div>
+      <div class="field">
+        <label>Contact Email</label>
+        <input type="email" name="contact_email" placeholder="rep@vendor.com" />
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <input name="notes" placeholder="Optional notes" />
+      </div>
+    </div>
+    <button type="submit">Add Vendor</button>
+  </form>
+</section>
+
+<h3>All Vendors ({{ vendors | length }})</h3>
 <table>
-  <tr><th>Name</th><th>Notes</th></tr>
-  {% for vendor in vendors %}
-  <tr><td>{{ vendor.name }}</td><td>{{ vendor.notes }}</td></tr>
-  {% else %}
-  <tr><td colspan="2">No vendors yet.</td></tr>
-  {% endfor %}
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Website</th>
+      <th>Contact</th>
+      <th>Email</th>
+      <th>Notes</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for v in vendors %}
+    <tr>
+      <td><strong>{{ v.name }}</strong></td>
+      <td>
+        {% if v.website %}
+          <a href="{{ v.website }}" target="_blank" rel="noopener">{{ v.website }}</a>
+        {% else %}—{% endif %}
+      </td>
+      <td>{{ v.contact_name or '—' }}</td>
+      <td>
+        {% if v.contact_email %}
+          <a href="mailto:{{ v.contact_email }}">{{ v.contact_email }}</a>
+        {% else %}—{% endif %}
+      </td>
+      <td>{{ v.notes or '' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('delete_vendor', vendor_id=v.id) }}"
+              onsubmit="return confirm('Delete this vendor? This will not delete related contracts/services.')">
+          <button type="submit" class="btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="muted">No vendors yet.</td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

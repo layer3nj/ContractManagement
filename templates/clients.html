@@ -1,17 +1,70 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Autotask Clients</h2>
-<form method="post" class="form-grid">
-  <input name="name" placeholder="Client name" required />
-  <input name="account_code" placeholder="Account code" />
-  <button type="submit">Add Client</button>
-</form>
+<h2>Clients</h2>
+<p class="muted">Set the <strong>Monthly Revenue</strong> for each client to enable profitability tracking.</p>
+
+<section class="card mb-1">
+  <h3>Add Client</h3>
+  <form method="post">
+    <div class="form-grid">
+      <div class="field">
+        <label>Client Name *</label>
+        <input name="name" placeholder="Acme Corp" required />
+      </div>
+      <div class="field">
+        <label>Account Code</label>
+        <input name="account_code" placeholder="Optional" />
+      </div>
+      <div class="field">
+        <label>Monthly Revenue ($)</label>
+        <input type="number" name="monthly_revenue" step="0.01" min="0" value="0" />
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <input name="notes" placeholder="Optional" />
+      </div>
+    </div>
+    <button type="submit">Add Client</button>
+  </form>
+</section>
+
+<h3>All Clients ({{ clients | length }})</h3>
 <table>
-  <tr><th>Name</th><th>Account Code</th></tr>
-  {% for client in clients %}
-  <tr><td>{{ client.name }}</td><td>{{ client.account_code }}</td></tr>
-  {% else %}
-  <tr><td colspan="2">No clients yet.</td></tr>
-  {% endfor %}
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Account Code</th>
+      <th>Monthly Revenue</th>
+      <th>Notes</th>
+      <th>Update Revenue</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for client in clients %}
+    <tr>
+      <td><strong>{{ client.name }}</strong></td>
+      <td>{{ client.account_code or '—' }}</td>
+      <td>{{ client.monthly_revenue | money }}</td>
+      <td>{{ client.notes or '' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('edit_client', client_id=client.id) }}" class="inline-form">
+          <input type="number" name="monthly_revenue" step="0.01" min="0"
+                 value="{{ client.monthly_revenue or 0 }}" style="width:100px" />
+          <input type="hidden" name="notes" value="{{ client.notes or '' }}" />
+          <button type="submit" class="btn-sm">Save</button>
+        </form>
+      </td>
+      <td>
+        <form method="post" action="{{ url_for('delete_client', client_id=client.id) }}"
+              onsubmit="return confirm('Delete this client?')">
+          <button type="submit" class="btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="muted">No clients yet.</td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}
