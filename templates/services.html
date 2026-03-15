@@ -1,31 +1,88 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Applications & Services</h2>
-<form method="post" class="form-grid">
-  <select name="vendor_id" required>
-    <option value="">Vendor</option>
-    {% for vendor in vendors %}
-    <option value="{{ vendor.id }}">{{ vendor.name }}</option>
-    {% endfor %}
-  </select>
-  <input name="name" placeholder="Service name" required />
-  <input name="category" placeholder="Category" />
-  <input name="recurring_cost" type="number" step="0.01" placeholder="Recurring cost" />
-  <input name="billing_cycle" placeholder="Billing cycle (monthly, annual...)" />
-  <button type="submit">Add Service</button>
-</form>
+<h2>Services &amp; Applications</h2>
+
+<section class="card mb-1">
+  <h3>Add Service</h3>
+  <form method="post">
+    <div class="form-grid">
+      <div class="field">
+        <label>Vendor *</label>
+        <select name="vendor_id" required>
+          <option value="">— select vendor —</option>
+          {% for vendor in vendors %}
+          <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Contract (optional)</label>
+        <select name="contract_id">
+          <option value="">— none —</option>
+          {% for c in contracts %}
+          <option value="{{ c.id }}">{{ c.vendor_name }} — {{ c.contract_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Service Name *</label>
+        <input name="name" placeholder="e.g. Microsoft 365 E3" required />
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <input name="category" placeholder="e.g. Productivity, Security" />
+      </div>
+      <div class="field">
+        <label>Recurring Cost ($)</label>
+        <input name="recurring_cost" type="number" step="0.01" min="0" value="0" />
+      </div>
+      <div class="field">
+        <label>Billing Cycle</label>
+        <select name="billing_cycle">
+          <option value="">— select —</option>
+          <option>Monthly</option>
+          <option>Quarterly</option>
+          <option>Annual</option>
+          <option>One-time</option>
+        </select>
+      </div>
+    </div>
+    <button type="submit">Add Service</button>
+  </form>
+</section>
+
+<h3>All Services ({{ services | length }})</h3>
 <table>
-  <tr><th>Vendor</th><th>Name</th><th>Category</th><th>Recurring Cost</th><th>Billing Cycle</th></tr>
-  {% for service in services %}
-  <tr>
-    <td>{{ service.vendor_name }}</td>
-    <td>{{ service.name }}</td>
-    <td>{{ service.category }}</td>
-    <td>{{ service.recurring_cost | money }}</td>
-    <td>{{ service.billing_cycle }}</td>
-  </tr>
-  {% else %}
-  <tr><td colspan="5">No services yet.</td></tr>
-  {% endfor %}
+  <thead>
+    <tr>
+      <th>Vendor</th>
+      <th>Contract</th>
+      <th>Service</th>
+      <th>Category</th>
+      <th>Recurring Cost</th>
+      <th>Billing Cycle</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in services %}
+    <tr>
+      <td>{{ s.vendor_name }}</td>
+      <td>{{ s.contract_name or '—' }}</td>
+      <td><strong>{{ s.name }}</strong></td>
+      <td>{{ s.category or '—' }}</td>
+      <td>{{ s.recurring_cost | money }}</td>
+      <td>{{ s.billing_cycle or '—' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('delete_service', service_id=s.id) }}"
+              onsubmit="return confirm('Delete this service?')">
+          <button type="submit" class="btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">No services yet. Add one above.</td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

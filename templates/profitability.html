@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Client Profitability</h2>
+
+<p class="muted">
+  Costs are averaged over <strong>{{ months_span }} month{% if months_span != 1 %}s{% endif %}</strong> of invoice history.
+  Allocated costs come from service→client mappings; direct expenses are assigned per client on the Expenses page.
+  Set each client's <strong>Monthly Revenue</strong> on the <a href="{{ url_for('clients') }}">Clients</a> page.
+</p>
+
+<section class="cards mb-1">
+  <article class="card-stat">
+    <h3>{{ total_revenue | money }}</h3>
+    <p>Total Monthly Revenue</p>
+  </article>
+  <article class="card-stat">
+    <h3>{{ total_cost | money }}</h3>
+    <p>Avg Monthly Cost</p>
+  </article>
+  <article class="card-stat {% if total_profit >= 0 %}profit{% else %}loss{% endif %}">
+    <h3>{{ total_profit | money }}</h3>
+    <p>Monthly Profit</p>
+  </article>
+  <article class="card-stat">
+    <h3>{% if overall_margin is not none %}{{ overall_margin | pct }}{% else %}—{% endif %}</h3>
+    <p>Overall Margin</p>
+  </article>
+</section>
+
+<table>
+  <thead>
+    <tr>
+      <th>Client</th>
+      <th>Monthly Revenue</th>
+      <th>Avg Monthly Cost</th>
+      <th>Monthly Profit</th>
+      <th>Margin</th>
+      <th>Total Allocated</th>
+      <th>Total Direct Exp.</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in clients %}
+    <tr>
+      <td><strong>{{ c.name }}</strong></td>
+      <td>{{ c.monthly_revenue | money }}</td>
+      <td>{{ c.avg_monthly_cost | money }}</td>
+      <td class="{% if c.monthly_profit >= 0 %}text-profit{% else %}text-loss{% endif %}">
+        <strong>{{ c.monthly_profit | money }}</strong>
+      </td>
+      <td>
+        {% if c.margin_pct is not none %}
+          <span class="badge {% if c.margin_pct >= 20 %}badge-active{% elif c.margin_pct >= 0 %}badge-expiring{% else %}badge-expired{% endif %}">
+            {{ c.margin_pct | pct }}
+          </span>
+        {% else %}
+          <span class="muted">No revenue set</span>
+        {% endif %}
+      </td>
+      <td>{{ c.total_allocated_cost | money }}</td>
+      <td>{{ c.total_direct_expenses | money }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">No client data yet. Add clients, set monthly revenue, and record expenses.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<section class="help-box mt-1">
+  <h4>How to use this report</h4>
+  <ol>
+    <li>Add <a href="{{ url_for('clients') }}">clients</a> and set their <em>Monthly Revenue</em>.</li>
+    <li>Add <a href="{{ url_for('vendors') }}">vendors</a>, <a href="{{ url_for('contracts') }}">contracts</a>, and <a href="{{ url_for('services') }}">services</a>.</li>
+    <li>Record <a href="{{ url_for('invoices') }}">invoices</a> against those services.</li>
+    <li>Use <a href="{{ url_for('mapping') }}">Service Mapping</a> to allocate service costs to clients by percentage.</li>
+    <li>Or add <a href="{{ url_for('expenses') }}">Direct Expenses</a> assigned straight to a client.</li>
+    <li>Come back here to see profit and margin per client.</li>
+  </ol>
+</section>
+{% endblock %}

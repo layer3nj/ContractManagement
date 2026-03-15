@@ -1,46 +1,91 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Invoices</h2>
-<form method="post" class="form-grid">
-  <select name="vendor_id" required>
-    <option value="">Vendor</option>
-    {% for vendor in vendors %}
-    <option value="{{ vendor.id }}">{{ vendor.name }}</option>
-    {% endfor %}
-  </select>
-  <select name="service_id">
-    <option value="">Optional service</option>
-    {% for service in services %}
-    <option value="{{ service.id }}">{{ service.vendor_name }} - {{ service.name }}</option>
-    {% endfor %}
-  </select>
-  <input name="invoice_number" placeholder="Invoice #" />
-  <input name="invoice_date" type="date" required />
-  <input name="amount" type="number" step="0.01" placeholder="Amount" required />
-  <input name="description" placeholder="Description" />
-  <button type="submit">Add Invoice</button>
-</form>
 
-<h3>Import invoices from CSV</h3>
-<p>Expected columns: vendor_name,service_name,invoice_number,invoice_date,amount,description</p>
-<form action="{{ url_for('import_invoices') }}" method="post" enctype="multipart/form-data" class="form-grid">
-  <input name="invoice_csv" type="file" accept=".csv" required />
-  <button type="submit">Import CSV</button>
-</form>
+<section class="card mb-1">
+  <h3>Add Invoice</h3>
+  <form method="post">
+    <div class="form-grid">
+      <div class="field">
+        <label>Vendor *</label>
+        <select name="vendor_id" required>
+          <option value="">— select vendor —</option>
+          {% for vendor in vendors %}
+          <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Service (optional)</label>
+        <select name="service_id">
+          <option value="">— none —</option>
+          {% for s in services %}
+          <option value="{{ s.id }}">{{ s.vendor_name }} — {{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Invoice #</label>
+        <input name="invoice_number" placeholder="Optional" />
+      </div>
+      <div class="field">
+        <label>Date *</label>
+        <input name="invoice_date" type="date" required />
+      </div>
+      <div class="field">
+        <label>Amount ($) *</label>
+        <input name="amount" type="number" step="0.01" min="0" required />
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input name="description" placeholder="Optional" />
+      </div>
+    </div>
+    <button type="submit">Add Invoice</button>
+  </form>
+</section>
 
+<section class="card mb-1">
+  <h3>Import from CSV</h3>
+  <p class="muted">Required columns: <code>vendor_name, invoice_date, amount</code> — Optional: <code>service_name, invoice_number, description</code></p>
+  <form action="{{ url_for('import_invoices') }}" method="post" enctype="multipart/form-data" class="inline-form">
+    <input name="invoice_csv" type="file" accept=".csv" required />
+    <button type="submit">Import CSV</button>
+  </form>
+</section>
+
+<h3>All Invoices ({{ invoices | length }})</h3>
 <table>
-  <tr><th>Date</th><th>Vendor</th><th>Service</th><th>Invoice #</th><th>Amount</th><th>Description</th></tr>
-  {% for invoice in invoices %}
-  <tr>
-    <td>{{ invoice.invoice_date }}</td>
-    <td>{{ invoice.vendor_name }}</td>
-    <td>{{ invoice.service_name or '-' }}</td>
-    <td>{{ invoice.invoice_number }}</td>
-    <td>{{ invoice.amount | money }}</td>
-    <td>{{ invoice.description }}</td>
-  </tr>
-  {% else %}
-  <tr><td colspan="6">No invoices yet.</td></tr>
-  {% endfor %}
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Vendor</th>
+      <th>Service</th>
+      <th>Invoice #</th>
+      <th>Amount</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for inv in invoices %}
+    <tr>
+      <td>{{ inv.invoice_date }}</td>
+      <td>{{ inv.vendor_name }}</td>
+      <td>{{ inv.service_name or '—' }}</td>
+      <td>{{ inv.invoice_number or '—' }}</td>
+      <td>{{ inv.amount | money }}</td>
+      <td>{{ inv.description or '' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('delete_invoice', invoice_id=inv.id) }}"
+              onsubmit="return confirm('Delete this invoice?')">
+          <button type="submit" class="btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">No invoices yet.</td></tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

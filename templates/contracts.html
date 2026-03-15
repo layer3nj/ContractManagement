@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Contracts</h2>
+
+<section class="card mb-1">
+  <h3>Add Contract</h3>
+  <form method="post">
+    <div class="form-grid">
+      <div class="field">
+        <label>Vendor *</label>
+        <select name="vendor_id" required>
+          <option value="">— select vendor —</option>
+          {% for v in vendors %}
+          <option value="{{ v.id }}">{{ v.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Contract Name *</label>
+        <input type="text" name="contract_name" placeholder="e.g. Microsoft 365 Agreement" required />
+      </div>
+      <div class="field">
+        <label>Contract #</label>
+        <input type="text" name="contract_number" placeholder="Optional" />
+      </div>
+      <div class="field">
+        <label>Start Date *</label>
+        <input type="date" name="start_date" required />
+      </div>
+      <div class="field">
+        <label>End Date</label>
+        <input type="date" name="end_date" />
+      </div>
+      <div class="field">
+        <label>Monthly Cost ($)</label>
+        <input type="number" name="monthly_cost" step="0.01" min="0" value="0" />
+      </div>
+      <div class="field">
+        <label>Payment Terms</label>
+        <select name="payment_terms">
+          <option value="">— select —</option>
+          <option>Monthly</option>
+          <option>Quarterly</option>
+          <option>Annual</option>
+          <option>Net 30</option>
+          <option>Net 60</option>
+        </select>
+      </div>
+      <div class="field checkbox-field">
+        <label>
+          <input type="checkbox" name="auto_renew" value="1" />
+          Auto-Renews
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <input type="text" name="notes" placeholder="Optional notes" style="width:100%" />
+    </div>
+    <button type="submit" class="mt-05">Add Contract</button>
+  </form>
+</section>
+
+<h3>All Contracts ({{ contracts | length }})</h3>
+{% if contracts %}
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Vendor</th>
+      <th>Contract Name</th>
+      <th>Contract #</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Monthly Cost</th>
+      <th>Terms</th>
+      <th>Auto-Renew</th>
+      <th>Notes</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in contracts %}
+    <tr>
+      <td>
+        <span class="badge badge-{{ c.status }}">
+          {% if c.status == 'active' %}Active
+          {% elif c.status == 'expiring' %}Expiring Soon
+          {% elif c.status == 'expired' %}Expired
+          {% else %}Ongoing{% endif %}
+        </span>
+      </td>
+      <td>{{ c.vendor_name }}</td>
+      <td><strong>{{ c.contract_name }}</strong></td>
+      <td>{{ c.contract_number or '—' }}</td>
+      <td>{{ c.start_date }}</td>
+      <td>{{ c.end_date or '—' }}</td>
+      <td>{{ c.monthly_cost | money }}</td>
+      <td>{{ c.payment_terms or '—' }}</td>
+      <td>{{ 'Yes' if c.auto_renew else 'No' }}</td>
+      <td class="notes-cell">{{ c.notes or '' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('delete_contract', contract_id=c.id) }}"
+              onsubmit="return confirm('Delete this contract?')">
+          <button type="submit" class="btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No contracts yet. Add one above.</p>
+{% endif %}
+{% endblock %}

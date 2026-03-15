@@ -1,48 +1,111 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Expense Dashboard</h2>
-<section class="cards">
-  <article><h3>{{ totals.vendors }}</h3><p>Vendors</p></article>
-  <article><h3>{{ totals.services }}</h3><p>Services</p></article>
-  <article><h3>{{ totals.invoices }}</h3><p>Invoices</p></article>
-  <article><h3>{{ totals.clients }}</h3><p>Autotask Clients</p></article>
+<h2>Dashboard</h2>
+
+<section class="cards mb-1">
+  <article class="card-stat">
+    <h3>{{ totals.vendors }}</h3>
+    <p>Vendors</p>
+  </article>
+  <article class="card-stat">
+    <h3>{{ totals.contracts }}</h3>
+    <p>Contracts</p>
+  </article>
+  <article class="card-stat">
+    <h3>{{ totals.invoices }}</h3>
+    <p>Invoices</p>
+  </article>
+  <article class="card-stat">
+    <h3>{{ totals.clients }}</h3>
+    <p>Clients</p>
+  </article>
 </section>
 
-<section class="grid">
-  <article>
-    <h3>Monthly Spend</h3>
-    <table>
-      <tr><th>Month</th><th>Total</th></tr>
-      {% for row in monthly_spend %}
-      <tr><td>{{ row.month }}</td><td>{{ row.total | money }}</td></tr>
-      {% else %}
-      <tr><td colspan="2">No invoice data yet.</td></tr>
+{% if expiring_contracts %}
+<section class="alert-box alert-warning mb-1">
+  <h4>⚠ Contracts Expiring Within 60 Days</h4>
+  <table>
+    <thead>
+      <tr><th>Vendor</th><th>Contract</th><th>End Date</th><th>Monthly Cost</th><th>Auto-Renew</th></tr>
+    </thead>
+    <tbody>
+      {% for c in expiring_contracts %}
+      <tr>
+        <td>{{ c.vendor_name }}</td>
+        <td>{{ c.contract_name }}</td>
+        <td><strong>{{ c.end_date }}</strong></td>
+        <td>{{ c.monthly_cost | money }}</td>
+        <td>{{ 'Yes' if c.auto_renew else 'No' }}</td>
+      </tr>
       {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if expired_contracts %}
+<section class="alert-box alert-danger mb-1">
+  <h4>Expired Contracts (most recent)</h4>
+  <table>
+    <thead>
+      <tr><th>Vendor</th><th>Contract</th><th>Expired</th><th>Monthly Cost</th></tr>
+    </thead>
+    <tbody>
+      {% for c in expired_contracts %}
+      <tr>
+        <td>{{ c.vendor_name }}</td>
+        <td>{{ c.contract_name }}</td>
+        <td>{{ c.end_date }}</td>
+        <td>{{ c.monthly_cost | money }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="grid">
+  <article class="card">
+    <h3>Monthly Spend (last 6 months)</h3>
+    <table>
+      <thead><tr><th>Month</th><th>Total</th></tr></thead>
+      <tbody>
+        {% for row in monthly_spend %}
+        <tr><td>{{ row.month }}</td><td>{{ row.total | money }}</td></tr>
+        {% else %}
+        <tr><td colspan="2" class="muted">No invoice data yet.</td></tr>
+        {% endfor %}
+      </tbody>
     </table>
   </article>
 
-  <article>
+  <article class="card">
     <h3>Spend by Vendor</h3>
     <table>
-      <tr><th>Vendor</th><th>Total</th></tr>
-      {% for row in spend_by_vendor %}
-      <tr><td>{{ row.name }}</td><td>{{ row.total | money }}</td></tr>
-      {% else %}
-      <tr><td colspan="2">No invoice data yet.</td></tr>
-      {% endfor %}
+      <thead><tr><th>Vendor</th><th>Total</th></tr></thead>
+      <tbody>
+        {% for row in spend_by_vendor %}
+        <tr><td>{{ row.name }}</td><td>{{ row.total | money }}</td></tr>
+        {% else %}
+        <tr><td colspan="2" class="muted">No invoice data yet.</td></tr>
+        {% endfor %}
+      </tbody>
     </table>
   </article>
 
-  <article>
+  <article class="card">
     <h3>Allocated Spend by Client</h3>
     <table>
-      <tr><th>Client</th><th>Allocated Spend</th></tr>
-      {% for row in spend_by_client %}
-      <tr><td>{{ row.name }}</td><td>{{ row.allocated_spend | money }}</td></tr>
-      {% else %}
-      <tr><td colspan="2">Create mappings + invoices to see allocation.</td></tr>
-      {% endfor %}
+      <thead><tr><th>Client</th><th>Allocated Spend</th></tr></thead>
+      <tbody>
+        {% for row in spend_by_client %}
+        <tr><td>{{ row.name }}</td><td>{{ row.allocated_spend | money }}</td></tr>
+        {% else %}
+        <tr><td colspan="2" class="muted">Create service mappings + invoices to see allocation.</td></tr>
+        {% endfor %}
+      </tbody>
     </table>
+    <p class="muted" style="font-size:0.85em">→ <a href="{{ url_for('profitability') }}">View full profitability report</a></p>
   </article>
 </section>
 {% endblock %}
