@@ -5,7 +5,7 @@
    ========================================================================== */
 
 const CONFIG = {
-  companyName: "Your Company",
+  companyName: "Layer3",
   toolName: "CMMC Readiness Check",
   // Set to true and fill in copy below if you offer a compliant hosting /
   // platform option you want to reference in the dynamic follow-up tips.
@@ -171,6 +171,10 @@ function renderNav() {
     ["matrix", "Shared Responsibility Matrix"],
   ];
   return `
+    <div class="sidebar-brand">
+      <img src="assets/logo-mark.svg" alt="" width="26" height="26">
+      <span>${escapeHtml(CONFIG.companyName)}</span>
+    </div>
     <div class="sidebar-title">${escapeHtml(CONFIG.toolName)}</div>
     <div class="sidebar-sub">Single-use assessment</div>
     <ul class="nav-list">
